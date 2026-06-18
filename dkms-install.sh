@@ -14,8 +14,8 @@ DRV_VERSION=5.2.20.2
 cp -r $(pwd) /usr/src/${DRV_NAME}-${DRV_VERSION}
 
 dkms add -m ${DRV_NAME} -v ${DRV_VERSION}
-dkms build -m ${DRV_NAME} -v ${DRV_VERSION}
-dkms install -m ${DRV_NAME} -v ${DRV_VERSION}
+dkms build -m ${DRV_NAME} -v ${DRV_VERSION} --verbose
+dkms install -m ${DRV_NAME} -v ${DRV_VERSION} --verbose
 RESULT=$?
 
 echo "Finished running dkms install steps."

@@ -114,9 +114,9 @@ CONFIG_RTW_SDIO_PM_KEEP_POWER = y
 ###################### MP HW TX MODE FOR VHT #######################
 CONFIG_MP_VHT_HW_TX_MODE = n
 ###################### Platform Related #######################
-CONFIG_PLATFORM_I386_PC = y
+CONFIG_PLATFORM_I386_PC = n
 CONFIG_PLATFORM_ARM_RPI = n
-CONFIG_PLATFORM_ARM64_RPI = n
+CONFIG_PLATFORM_ARM64_RPI = y
 CONFIG_PLATFORM_ANDROID_X86 = n
 CONFIG_PLATFORM_ANDROID_INTEL_X86 = n
 CONFIG_PLATFORM_ARM_NETHUNTER = n
@@ -301,7 +301,8 @@ _BTC_FILES += hal/btc/halbtc8192e1ant.o \
 				hal/btc/halbtc8821c2ant.o
 endif
 
-include $(TopDIR)/hal/phydm/phydm.mk
+#include $(TopDIR)/hal/phydm/phydm.mk
+include /home/admin/rtl8812au/hal/phydm/phydm.mk
 
 ########### HAL_RTL8812A_RTL8821A #################################
 ifneq ($(CONFIG_RTL8812A)_$(CONFIG_RTL8821A), n_n)
@@ -316,6 +317,10 @@ endif
 ifeq ($(CONFIG_SDIO_HCI), y)
 MODULE_NAME = 8812as
 endif
+
+
+$(info   1 MODULE_NAME = $(MODULE_NAME))
+$(info    CONFIG_RTL8812A = $(CONFIG_RTL8812A))
 
 _HAL_INTFS_FILES +=  hal/HalPwrSeqCmd.o \
 					hal/$(RTL871X)/Hal8812PwrSeq.o \
@@ -1536,6 +1541,7 @@ ifneq ($(USER_MODULE_NAME),)
 MODULE_NAME := $(USER_MODULE_NAME)_wfb
 endif
 
+$(info 3 MODULE_NAME = $(MODULE_NAME) )
 EXTRA_CFLAGS += -Wno-missing-prototypes -Wno-header-guard -Wno-missing-declarations
 asflags-y += $(EXTRA_AFLAGS)
 ccflags-y += $(EXTRA_CFLAGS)
@@ -1543,6 +1549,8 @@ cppflags-y += $(EXTRA_CPPFLAGS)
 ldflags-y += $(EXTRA_LDFLAGS)
 
 ifneq ($(KERNELRELEASE),)
+
+$(info KERNELRELEASE)
 
 rtk_core :=	core/rtw_cmd.o \
 		core/rtw_security.o \
@@ -1578,6 +1586,8 @@ ifeq ($(CONFIG_SDIO_HCI), y)
 rtk_core += core/rtw_sdio.o
 endif
 
+$(info  2 MODULE_NAME = $(MODULE_NAME))
+
 $(MODULE_NAME)-y += $(rtk_core)
 
 $(MODULE_NAME)-$(CONFIG_INTEL_WIDI) += core/rtw_intel_widi.o
@@ -1599,14 +1609,18 @@ endif
 
 obj-$(CONFIG_RTL8812AU) := $(MODULE_NAME).o
 
+$(info   obj-m =  obj-$(CONFIG_RTL8812AU) )
+$(info   module_name-y = $($(MODULE_NAME)-y) )
+
 else
 
+$(info Not KERNELRELEASE)
 export CONFIG_RTL8812AU = m
 
 all: modules
 
 modules:
-	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd) O="$(KBUILD_OUTPUT)" modules
+	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd) modules
 
 strip:
 	$(CROSS_COMPILE)strip $(MODULE_NAME).ko --strip-unneeded

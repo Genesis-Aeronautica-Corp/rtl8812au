@@ -2071,6 +2071,7 @@ u32 mp_query_psd(PADAPTER pAdapter, u8 *data)
 {
 	u32 i, psd_pts = 0, psd_start = 0, psd_stop = 0;
 	u32 psd_data = 0;
+	u32 data_len = 0;
 
 
 #ifdef PLATFORM_LINUX
@@ -2098,7 +2099,9 @@ u32 mp_query_psd(PADAPTER pAdapter, u8 *data)
 			psd_data = rtw_GetPSDData(pAdapter, i - psd_pts);
 		else
 			psd_data = rtw_GetPSDData(pAdapter, i);
-		sprintf(data, "%s%x ", data, psd_data);
+		u32 len = sprintf(data, "%x ", psd_data);
+		data_len += len;
+		data += len;
 		i++;
 	}
 
@@ -2108,7 +2111,7 @@ u32 mp_query_psd(PADAPTER pAdapter, u8 *data)
 	rtw_mdelay_os(100);
 #endif
 
-	return strlen(data) + 1;
+	return data_len + 1;
 }
 
 
